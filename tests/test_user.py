@@ -31,7 +31,6 @@ class TestUserMethods:
             "message": "User already exists"
             }
 
-
     @pytest.mark.parametrize(
         'data',
         [
@@ -49,13 +48,11 @@ class TestUserMethods:
             "message": "Email, password and name are required fields"
         }
 
-
     @allure.title('Тесты на успешный логин')
     def test_login_user_success(self, user):
         user = UserMethods()
         code, response = user.login_user(User.data_correct_full)
         assert code == ResponseStatusCode.SUCCESS_STATUS and 'accessToken' in response and 'refreshToken' in response
-
 
     @pytest.mark.parametrize(
         'data',
