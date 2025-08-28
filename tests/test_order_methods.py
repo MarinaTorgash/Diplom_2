@@ -10,57 +10,67 @@ from orders_json_schemas import order_schema_unauthenticated, order_schema_authe
 
 class TestOrderMethods:
 
-    @allure.title('Тесты на создание ордера с авторизованным пользователем')
-    def test_create_order_with_authorization(self, ingredients, user_login):
+    @allure.title("Тесты на создание ордера с авторизованным пользователем")
+    def test_create_order_with_authorization(self, ingredients, user):
         order = OrderMethods()
-        code, response = order.create_order({'ingredients': ingredients}, user_login)
+        code, response = order.create_order(
+            {"ingredients": ingredients}, user["access_token"]
+        )
         dict_response = loads(response)
-        assert (code == ResponseStatusCode.SUCCESS_STATUS and dict_response['success'] == True
-                and is_valid_json(instance=dict_response, schema=order_schema_authenticated))
+        assert (
+            code == ResponseStatusCode.SUCCESS_STATUS
+            and dict_response["success"] is True
+            and is_valid_json(
+                instance=dict_response, schema=order_schema_authenticated
+            )
+        )
 
-
-    @allure.title('Тесты на создание ордера без авторизации')
+    @allure.title("Тесты на создание ордера без авторизации")
     def test_create_order_without_authorization(self, ingredients):
         order = OrderMethods()
-        code, response = order.create_order({'ingredients': ingredients}, token='')
+        code, response = order.create_order({"ingredients": ingredients}, token="")
         dict_response = loads(response)
-        assert (code == ResponseStatusCode.SUCCESS_STATUS and dict_response['success'] == True
-                and is_valid_json(instance=dict_response, schema=order_schema_unauthenticated))
+        assert (
+            code == ResponseStatusCode.SUCCESS_STATUS
+            and dict_response["success"] is True
+            and is_valid_json(
+                instance=dict_response, schema=order_schema_unauthenticated
+            )
+        )
 
-
-    @allure.title('Тесты на создание ордера без ингредиентов')
+    @allure.title("Тесты на создание ордера без ингредиентов")
     def test_create_order_without_ingredients(self):
         order = OrderMethods()
-        code, response = order.create_order({'ingredients': []}, token='')
+        code, response = order.create_order({"ingredients": []}, token="")
         assert code == ResponseStatusCode.BAD_REQUEST_STATUS and loads(response) == {
             "success": False,
-            "message": "Ingredient ids must be provided"
+            "message": "Ingredient ids must be provided",
         }
 
-    @allure.title('Тесты на создание ордера с невалидным хэшем ингредиентов')
+    @allure.title("Тесты на создание ордера с невалидным хэшем ингредиентов")
     def test_create_order_with_invalid_ingredients(self):
         order = OrderMethods()
-        code, response = order.create_order({'ingredients': Ingredient.incorrect_ingredients_data}, token='')
+        code, response = order.create_order(
+            {"ingredients": Ingredient.incorrect_ingredients_data}, token=""
+        )
         assert code == ResponseStatusCode.BAD_REQUEST_STATUS
 
-
-    @allure.title('Тесты на получение списка ордеров по юзеру без авторизации')
+    @allure.title("Тесты на получение списка ордеров по юзеру без авторизации")
     def test_get_list_user_orders_without_authorization(self):
         order = OrderMethods()
-        code, response = order.get_list_user_orders(token='')
+        code, response = order.get_list_user_orders(token="")
         assert code == ResponseStatusCode.UNAUTHORIZED_STATUS and response == {
             "success": False,
-            "message": "You should be authorised"
+            "message": "You should be authorised",
         }
 
-    @allure.title('Тесты на получение списка ордеров по юзеру с авторизацией')
-    def test_get_list_user_orders_with_authorization(self, user_login):
+    @allure.title("Тесты на получение списка ордеров по юзеру с авторизацией")
+    def test_get_list_user_orders_with_authorization(self, user):
         order = OrderMethods()
-        code, response = order.get_list_user_orders(user_login)
+        code, response = order.get_list_user_orders(user["access_token"])
 
-        print("Код ответа при логине:", code)
-        print("Тело ответа при логине:", response)
-
-        type_order_field = type(response['orders'])
-        assert code == ResponseStatusCode.SUCCESS_STATUS and response['success'] == True and type_order_field == list
-
+        assert (
+            code == ResponseStatusCode.SUCCESS_STATUS
+            and response["success"] is True
+            and isinstance(response["orders"], list)
+        )
