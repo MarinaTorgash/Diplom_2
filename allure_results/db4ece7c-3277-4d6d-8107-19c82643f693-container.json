@@ -1,0 +1,1 @@
+{"uuid": "7683e491-722d-43da-a06d-05245aec903a", "children": ["c600ee86-b3f7-43c2-b0e1-5d9d93d1b3fb"], "befores": [{"name": "ingredients", "status": "passed", "steps": [{"name": "Получаем список ингредиентов", "status": "passed", "start": 1756387397211, "stop": 1756387397784}], "start": 1756387397211, "stop": 1756387397784}], "start": 1756387397211, "stop": 1756387402584}
